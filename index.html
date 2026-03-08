@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Futsal Lab</title>
-
+<link rel="manifest" href="manifest.json">
 <style>
 
 body{
@@ -44,6 +44,12 @@ opacity:0.8;
 <button>Equipos</button>
 
 <button>Estadísticas</button>
+
+  <script>
+if ("serviceWorker" in navigator) {
+ navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 
 </body>
 
