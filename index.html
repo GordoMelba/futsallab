@@ -7,28 +7,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Futsal Lab</title>
+
 <link rel="manifest" href="manifest.json">
+
 <style>
 
 body{
-font-family: Arial;
-background:#0f172a;
+margin:0;
+font-family:Arial;
+background-image:url("fondo1.png");
+background-size:cover;
+background-position:center;
+height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
 color:white;
 text-align:center;
-padding-top:120px;
 }
 
-button{
-padding:20px;
-font-size:20px;
-margin:20px;
-border-radius:12px;
+.logo{
+position:absolute;
+top:60px;
+}
+
+.logo img{
+max-width:320px;
+}
+
+.installContainer{
+display:flex;
+align-items:center;
+gap:20px;
+background:rgba(0,0,0,0.55);
+padding:25px 35px;
+border-radius:16px;
+}
+
+.installBtn{
+background:#22c55e;
 border:none;
+padding:20px 30px;
+font-size:22px;
+color:white;
+border-radius:12px;
 cursor:pointer;
 }
 
-button:hover{
-opacity:0.8;
+.installBtn:hover{
+opacity:0.9;
+}
+
+.icon{
+width:60px;
+height:60px;
 }
 
 </style>
@@ -37,26 +70,27 @@ opacity:0.8;
 
 <body>
 
-<h1>FUTSAL LAB</h1>
+<div class="logo">
+<img src="logoletras.png">
+</div>
 
-<button>Nuevo partido</button>
+<div class="installContainer">
 
-<button>Equipos</button>
+<img src="icon.png" class="icon">
 
-<button>Estadísticas</button>
-
-  <button id="installBtn" style="display:none; padding:20px; font-size:22px; margin-top:40px; border-radius:12px; background:#22c55e; color:white;">
+<button id="installBtn" class="installBtn">
 Instalar app
 </button>
 
-  <script>
+</div>
+
+<script>
+
 if ("serviceWorker" in navigator) {
- navigator.serviceWorker.register("service-worker.js")
-   .then(function() {
-    console.log("Service Worker registrado");
-  });
+ navigator.serviceWorker.register("service-worker.js");
 }
-    let deferredPrompt;
+
+let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
 
 window.addEventListener("beforeinstallprompt", (e) => {
@@ -71,8 +105,6 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 installBtn.addEventListener("click", async () => {
 
- installBtn.style.display = "none";
-
  deferredPrompt.prompt();
 
  const { outcome } = await deferredPrompt.userChoice;
@@ -80,8 +112,8 @@ installBtn.addEventListener("click", async () => {
  deferredPrompt = null;
 
 });
+
 </script>
 
 </body>
-
 </html>
