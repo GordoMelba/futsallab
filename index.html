@@ -70,6 +70,8 @@ height:60px;
 
 <body>
 
+<div id="installScreen">
+
 <div class="logo">
 <img src="logoletras.png">
 </div>
@@ -78,38 +80,69 @@ height:60px;
 
 <img src="icon.png" class="icon">
 
-<button id="installBtn" class="installBtn">
+<button id="installBtn" class="installBtn" style="display:none;">
 Instalar app
 </button>
+
+</div>
+
+</div>
+
+<div id="appMenu" style="display:none; text-align:center;">
+
+<h1>Futsal Lab</h1>
+
+<button style="padding:20px;font-size:22px;margin:15px;">Nuevo partido</button>
+
+<button style="padding:20px;font-size:22px;margin:15px;">Equipos</button>
+
+<button style="padding:20px;font-size:22px;margin:15px;">Estadísticas</button>
 
 </div>
 
 <script>
 
 if ("serviceWorker" in navigator) {
- navigator.serviceWorker.register("service-worker.js");
+navigator.serviceWorker.register("service-worker.js");
+}
+
+const installScreen = document.getElementById("installScreen");
+const appMenu = document.getElementById("appMenu");
+const installBtn = document.getElementById("installBtn");
+
+const isStandalone =
+window.matchMedia("(display-mode: standalone)").matches
+|| window.navigator.standalone === true;
+
+if(isStandalone){
+
+installScreen.style.display="none";
+appMenu.style.display="block";
+
+document.body.style.backgroundImage="none";
+document.body.style.background="#0f172a";
+
 }
 
 let deferredPrompt;
-const installBtn = document.getElementById("installBtn");
 
-window.addEventListener("beforeinstallprompt", (e) => {
+window.addEventListener("beforeinstallprompt",(e)=>{
 
- e.preventDefault();
+e.preventDefault();
 
- deferredPrompt = e;
+deferredPrompt=e;
 
- installBtn.style.display = "block";
+installBtn.style.display="block";
 
 });
 
-installBtn.addEventListener("click", async () => {
+installBtn.addEventListener("click",async()=>{
 
- deferredPrompt.prompt();
+deferredPrompt.prompt();
 
- const { outcome } = await deferredPrompt.userChoice;
+await deferredPrompt.userChoice;
 
- deferredPrompt = null;
+deferredPrompt=null;
 
 });
 
