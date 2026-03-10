@@ -1,5 +1,12 @@
-const CACHE = 'futsallab-v2';
-const ASSETS = ['/', '/app.html', '/manifest.json', '/icon.png', '/logoletras.png'];
+const CACHE = 'futsallab-v3';
+const ASSETS = [
+  '/futsallab/',
+  '/futsallab/index.html',
+  '/futsallab/app.html',
+  '/futsallab/manifest.json',
+  '/futsallab/icon.png',
+  '/futsallab/logoletras.png'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {}));
@@ -15,6 +22,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/app.html')))
+    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/futsallab/app.html')))
   );
 });
