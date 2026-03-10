@@ -248,8 +248,7 @@ Instalar app
 
 <h4>MINUTOS</h4>
 
-<button>MINUTOS</button>
-
+<button onclick="gestionarMinutos()">MINUTOS</button>
 <div id="onCourt"></div>
 
 </div>
@@ -502,6 +501,95 @@ let seconds=0;
 
 let timer=null;
 
+let jugadoresEnCancha = [];
+let eventosPartido = [];
+let ultimoTick = 0;
+
+// CLICK EN CANCHA
+
+document.addEventListener("click",function(e){
+
+if(!e.target.closest(".court")) return;
+
+if(!timer) return;
+
+let cancha = document.querySelector(".court");
+
+let rect = cancha.getBoundingClientRect();
+
+let x = (e.clientX - rect.left) / rect.width * 100;
+let y = (e.clientY - rect.top) / rect.height * 100;
+
+abrirMenuEvento(x,y);
+
+});
+
+function abrirMenuEvento(x,y){
+
+if(jugadoresEnCancha.length===0){
+alert("Primero seleccioná los jugadores en cancha en MINUTOS");
+return;
+}
+
+let tipo = prompt("Evento: remate / falta / perdida / recuperacion / tarjeta");
+
+if(!tipo) return;
+
+let subtipo="";
+
+if(tipo==="remate"){
+subtipo = prompt("desviado / al arco / gol");
+}
+
+if(tipo==="tarjeta"){
+subtipo = prompt("amarilla / roja");
+}
+
+let nombres = jugadoresEnCancha.map(j=>j.nombre).join(", ");
+
+let jugador = prompt("Jugador: "+nombres);
+
+if(!jugador) return;
+
+let jugadorObj = jugadoresEnCancha.find(j=>j.nombre===jugador);
+
+if(!jugadorObj){
+alert("Jugador no válido");
+return;
+}
+
+eventosPartido.push({
+tiempo:seconds,
+tipo:tipo,
+subtipo:subtipo,
+jugador:jugadorObj.id,
+x:x,
+y:y
+});
+
+dibujarEvento(x,y,tipo);
+
+}
+
+function dibujarEvento(x,y,tipo){
+
+let punto=document.createElement("div");
+
+punto.style.position="absolute";
+punto.style.width="12px";
+punto.style.height="12px";
+punto.style.borderRadius="50%";
+
+if(tipo==="remate") punto.style.background="red";
+else punto.style.background="yellow";
+
+punto.style.left=x+"%";
+punto.style.top=y+"%";
+
+document.querySelector(".court").appendChild(punto);
+
+}
+
 function play(){
 
 if(timer)return;
@@ -553,7 +641,53 @@ let teamId = document.getElementById("teamSelect").value;
 if(!teamId){
 alert("Seleccioná un equipo");
 return;
+
+let teamId = document.getElementById("teamSelect").value;
+
+let equipo = db.equipos.find(e=>e.id==teamId);
+
+jugadoresEnCancha = equipo.jugadores.slice(0,5);
+
+actualizarPanelMinutos();
+  
 }
+
+function gestionarMinutos(){
+
+let teamId = document.getElementById("teamSelect").value;
+
+let equipo = db.equipos.find(e=>e.id==teamId);
+
+let nombres = equipo.jugadores.map(j=>j.nombre).join(", ");
+
+let sale = prompt("Jugador que sale: "+nombres);
+
+let entra = prompt("Jugador que entra: "+nombres);
+
+let jugadorSale = equipo.jugadores.find(j=>j.nombre===sale);
+let jugadorEntra = equipo.jugadores.find(j=>j.nombre===entra);
+
+if(!jugadorSale || !jugadorEntra){
+alert("Jugador no válido");
+return;
+}
+
+jugadoresEnCancha = jugadoresEnCancha.filter(j=>j.id!==jugadorSale.id);
+
+jugadoresEnCancha.push(jugadorEntra);
+
+actualizarPanelMinutos();
+
+}
+
+function actualizarPanelMinutos(){
+
+let cont = document.getElementById("onCourt");
+
+cont.innerHTML = jugadoresEnCancha.map(j=>j.nombre).join("<br>");
+
+}
+  
 
 let rival = document.getElementById("rivalInput").value;
 
