@@ -275,8 +275,8 @@
         ⬇ Instalar app
       </button>
 
-      <a class="btn-open" href="app.html">
-        Abrir en el navegador →
+<a class="btn-open" href="/futsallab/app.html">
+  Abrir en el navegador →
       </a>
 
       <!-- iOS manual instructions (shown on iOS) -->
@@ -309,8 +309,7 @@
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
   const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
-  if (isInStandalone) { window.location.href = 'app.html'; }
-
+if (isInStandalone) { window.location.href = '/futsallab/app.html'; }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   }
