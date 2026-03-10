@@ -89,13 +89,24 @@ Instalar app
 </div>
 
 <div id="appMenu" style="display:none; text-align:center;">
+<div id="equiposScreen" style="display:none;">
+
+<h2>Equipos</h2>
+
+<button id="crearEquipoBtn">Crear equipo</button>
+
+<div id="listaEquipos"></div>
+
+<br>
+<button id="volverMenu">Volver</button>
+
+</div>
 
 <h1>Futsal Lab</h1>
 
 <button style="padding:20px;font-size:22px;margin:15px;">Nuevo partido</button>
 
-<button style="padding:20px;font-size:22px;margin:15px;">Equipos</button>
-
+<button id="btnEquipos" style="padding:20px;font-size:22px;margin:15px;">Equipos</button>
 <button style="padding:20px;font-size:22px;margin:15px;">Estadísticas</button>
 
 </div>
@@ -144,7 +155,61 @@ await deferredPrompt.userChoice;
 deferredPrompt=null;
 
 });
+// BOTON EQUIPOS
 
+const btnEquipos = document.getElementById("btnEquipos");
+const equiposScreen = document.getElementById("equiposScreen");
+const volverMenu = document.getElementById("volverMenu");
+const crearEquipoBtn = document.getElementById("crearEquipoBtn");
+const listaEquipos = document.getElementById("listaEquipos");
+
+btnEquipos.onclick = function(){
+
+appMenu.style.display="none";
+equiposScreen.style.display="block";
+
+mostrarEquipos();
+
+};
+
+volverMenu.onclick = function(){
+
+equiposScreen.style.display="none";
+appMenu.style.display="block";
+
+};
+
+function mostrarEquipos(){
+
+listaEquipos.innerHTML="";
+
+let equipos = getEquipos();
+
+equipos.forEach(e => {
+
+let div = document.createElement("div");
+
+div.innerText = e.nombre;
+
+listaEquipos.appendChild(div);
+
+});
+
+}
+
+// CREAR EQUIPO
+
+crearEquipoBtn.onclick = function(){
+
+let nombre = prompt("Nombre del equipo");
+
+if(!nombre) return;
+
+addEquipo(nombre,"");
+
+mostrarEquipos();
+
+};
 </script>
 <script src="database.js"></script>
 </body>
