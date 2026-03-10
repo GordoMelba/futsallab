@@ -13,182 +13,266 @@
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background-image:url("fondo1.png");
-background-size:cover;
-background-position:center;
-height:100vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+background:#0f172a;
 color:white;
 text-align:center;
+margin:0;
+padding:0;
 }
 
-.logo{
-position:absolute;
-top:60px;
-}
-
-.logo img{
-max-width:320px;
-}
-
-.installContainer{
-display:flex;
-align-items:center;
-gap:20px;
-background:rgba(0,0,0,0.55);
-padding:25px 35px;
-border-radius:16px;
-}
-
-.installBtn{
-background:#22c55e;
+button{
+padding:15px;
+font-size:18px;
+margin:10px;
+border-radius:10px;
 border:none;
-padding:20px 30px;
-font-size:22px;
-color:white;
-border-radius:12px;
 cursor:pointer;
 }
 
-.installBtn:hover{
-opacity:0.9;
+.screen{
+display:none;
+padding:20px;
 }
 
-.icon{
-width:60px;
-height:60px;
+#menu{
+display:block;
+}
+
+.card{
+background:#1e293b;
+margin:10px;
+padding:15px;
+border-radius:10px;
+}
+
+input{
+padding:10px;
+margin:5px;
+border-radius:6px;
+border:none;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
-<div id="installScreen">
-
-<div class="logo">
-<img src="logoletras.png">
-</div>
-
-<div class="installContainer">
-
-<img src="icon.png" class="icon">
-
-<button id="installBtn" class="installBtn" style="display:none;">
-Instalar app
-</button>
-
-</div>
-
-</div>
-
-
-<div id="appMenu" style="display:none; text-align:center;">
+<div id="menu" class="screen">
 
 <h1>Futsal Lab</h1>
 
-<button id="btnNuevo" style="padding:20px;font-size:22px;margin:15px;">Nuevo partido</button>
-
-<button id="btnEquipos" style="padding:20px;font-size:22px;margin:15px;">Equipos</button>
-
-<button id="btnEstadisticas" style="padding:20px;font-size:22px;margin:15px;">Estadísticas</button>
+<button onclick="abrirEquipos()">Equipos</button>
+<button onclick="alert('Nuevo partido luego')">Nuevo partido</button>
+<button onclick="alert('Estadísticas luego')">Estadísticas</button>
 
 </div>
 
-<div id="equiposScreen" style="display:none; text-align:center;">
+
+
+<div id="equiposScreen" class="screen">
 
 <h2>Equipos</h2>
 
-<button id="crearEquipoBtn">Crear equipo</button>
+<button onclick="crearEquipo()">Crear equipo</button>
 
 <div id="listaEquipos"></div>
 
 <br>
 
-<button id="volverMenu">Volver</button>
+<button onclick="volverMenu()">Volver</button>
 
 </div>
-<script src="database.js"></script>
+
+
+
+<div id="equipoDetalle" class="screen">
+
+<h2 id="nombreEquipo"></h2>
+
+<button onclick="agregarJugador()">Agregar jugador</button>
+
+<div id="listaJugadores"></div>
+
+<br>
+
+<button onclick="volverEquipos()">Volver</button>
+
+</div>
+
+
 
 <script>
 
-if ("serviceWorker" in navigator) {
-navigator.serviceWorker.register("service-worker.js");
+let db = JSON.parse(localStorage.getItem("futsalDB")) || {equipos:[]};
+
+function guardarDB(){
+localStorage.setItem("futsalDB",JSON.stringify(db));
 }
 
-const installScreen = document.getElementById("installScreen");
-const appMenu = document.getElementById("appMenu");
-const installBtn = document.getElementById("installBtn");
 
-const isStandalone =
-window.matchMedia("(display-mode: standalone)").matches ||
-window.navigator.standalone === true;
+function mostrarPantalla(id){
 
-if(isStandalone){
+document.querySelectorAll(".screen").forEach(s=>{
+s.style.display="none";
+});
 
-installScreen.style.display="none";
-appMenu.style.display="block";
-
-document.body.style.backgroundImage="none";
-document.body.style.background="#0f172a";
+document.getElementById(id).style.display="block";
 
 }
 
-let deferredPrompt;
 
-window.addEventListener("beforeinstallprompt",(e)=>{
 
-e.preventDefault();
+function volverMenu(){
+mostrarPantalla("menu");
+}
 
-deferredPrompt=e;
 
-installBtn.style.display="block";
+
+function abrirEquipos(){
+
+mostrarPantalla("equiposScreen");
+
+renderEquipos();
+
+}
+
+
+
+function crearEquipo(){
+
+let nombre = prompt("Nombre del equipo");
+
+if(!nombre) return;
+
+let equipo={
+id:Date.now(),
+nombre:nombre,
+jugadores:[]
+};
+
+db.equipos.push(equipo);
+
+guardarDB();
+
+renderEquipos();
+
+}
+
+
+
+function renderEquipos(){
+
+let cont=document.getElementById("listaEquipos");
+
+cont.innerHTML="";
+
+db.equipos.forEach(e=>{
+
+let div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=`
+<h3>${e.nombre}</h3>
+<button onclick="abrirEquipo(${e.id})">Abrir</button>
+`;
+
+cont.appendChild(div);
 
 });
 
-installBtn.addEventListener("click",async()=>{
+}
 
-deferredPrompt.prompt();
 
-await deferredPrompt.userChoice;
 
-deferredPrompt=null;
+let equipoActual=null;
+
+
+
+function abrirEquipo(id){
+
+equipoActual=db.equipos.find(e=>e.id===id);
+
+document.getElementById("nombreEquipo").innerText=equipoActual.nombre;
+
+mostrarPantalla("equipoDetalle");
+
+renderJugadores();
+
+}
+
+
+
+function volverEquipos(){
+
+mostrarPantalla("equiposScreen");
+
+}
+
+
+
+function agregarJugador(){
+
+let nombre=prompt("Nombre jugador");
+
+if(!nombre) return;
+
+let jugador={
+id:Date.now(),
+nombre:nombre
+};
+
+equipoActual.jugadores.push(jugador);
+
+guardarDB();
+
+renderJugadores();
+
+}
+
+
+
+function eliminarJugador(id){
+
+equipoActual.jugadores=equipoActual.jugadores.filter(j=>j.id!==id);
+
+guardarDB();
+
+renderJugadores();
+
+}
+
+
+
+function renderJugadores(){
+
+let cont=document.getElementById("listaJugadores");
+
+cont.innerHTML="";
+
+equipoActual.jugadores.forEach(j=>{
+
+let div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=`
+${j.nombre}
+<br>
+<button onclick="eliminarJugador(${j.id})">Eliminar</button>
+`;
+
+cont.appendChild(div);
 
 });
-// BOTONES MENU PRINCIPAL
-
-const btnEquipos = document.getElementById("btnEquipos");
-const btnNuevo = document.getElementById("btnNuevo");
-const btnEstadisticas = document.getElementById("btnEstadisticas");
-
-btnEquipos.onclick = function(){
-
-appMenu.style.display = "none";
-
-equiposScreen.style.display = "block";
-
-mostrarEquipos();
 
 }
 
-btnNuevo.onclick = function(){
-
-alert("Nuevo partido (próximo paso)");
-
-}
-
-btnEstadisticas.onclick = function(){
-
-alert("Estadísticas (próximo paso)");
-
-}
 </script>
 
 </body>
+
 </html>
