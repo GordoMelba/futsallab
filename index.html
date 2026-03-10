@@ -157,7 +157,11 @@ const btnEstadisticas = document.getElementById("btnEstadisticas");
 
 btnEquipos.onclick = function(){
 
-alert("Pantalla de equipos (próximo paso)");
+appMenu.style.display = "none";
+
+equiposScreen.style.display = "block";
+
+mostrarEquipos();
 
 }
 
