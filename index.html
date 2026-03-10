@@ -1,278 +1,1210 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Futsal Lab</title>
-
 <link rel="manifest" href="manifest.json">
 
 <style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+  }
 
-body{
-font-family:Arial;
-background:#0f172a;
-color:white;
-text-align:center;
-margin:0;
-padding:0;
-}
+  .screen{
+    display:none;
+    min-height:100vh;
+    padding:20px;
+  }
 
-button{
-padding:15px;
-font-size:18px;
-margin:10px;
-border-radius:10px;
-border:none;
-cursor:pointer;
-}
+  .centered{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
 
-.screen{
-display:none;
-padding:20px;
-}
+  button{
+    padding:14px 18px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    margin:8px;
+  }
 
-#menu{
-display:block;
-}
+  input, select{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin:8px;
+    font-size:16px;
+  }
 
-.card{
-background:#1e293b;
-margin:10px;
-padding:15px;
-border-radius:10px;
-}
+  .primary{
+    background:#22c55e;
+    color:white;
+  }
 
-input{
-padding:10px;
-margin:5px;
-border-radius:6px;
-border:none;
-}
+  .secondary{
+    background:#e5e7eb;
+    color:#111827;
+  }
 
+  .danger{
+    background:#dc2626;
+    color:white;
+  }
+
+  .card{
+    background:#1e293b;
+    padding:16px;
+    border-radius:14px;
+    margin:10px 0;
+  }
+
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .menu-buttons{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+    margin-top:30px;
+  }
+
+  .menu-buttons button{
+    width:280px;
+    max-width:90vw;
+    font-size:22px;
+    padding:18px;
+  }
+
+  .list-item{
+    background:#1e293b;
+    border-radius:12px;
+    padding:12px;
+    margin:10px 0;
+  }
+
+  .small{
+    font-size:14px;
+    opacity:.85;
+  }
+
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+
+  .match-layout{
+    display:grid;
+    grid-template-columns: 1fr 290px;
+    gap:14px;
+    min-height:calc(100vh - 100px);
+  }
+
+  .court-wrapper{
+    position:relative;
+    background:#0b1220;
+    border-radius:18px;
+    padding:12px;
+  }
+
+  .match-header{
+    background:#1e293b;
+    border-radius:14px;
+    padding:10px 14px;
+    margin-bottom:10px;
+    font-size:16px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .court{
+    position:relative;
+    width:100%;
+    aspect-ratio: 2 / 1;
+    background:#1696c3;
+    border:6px solid #ffffff;
+    border-radius:4px;
+    overflow:hidden;
+    cursor:crosshair;
+  }
+
+  .midline{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:4px;
+    height:100%;
+    background:white;
+    transform:translateX(-50%);
+  }
+
+  .center-circle{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:14%;
+    aspect-ratio:1/1;
+    border:5px solid white;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  .penalty-left, .penalty-right{
+    position:absolute;
+    top:12%;
+    width:14%;
+    height:76%;
+    border:5px solid white;
+  }
+
+  .penalty-left{
+    left:-2px;
+    border-right:none;
+    border-radius:0 140px 140px 0;
+  }
+
+  .penalty-right{
+    right:-2px;
+    border-left:none;
+    border-radius:140px 0 0 140px;
+  }
+
+  .goal-label{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(0,0,0,.55);
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:13px;
+    z-index:3;
+  }
+
+  .goal-own{ left:8px; }
+  .goal-rival{ right:8px; }
+
+  .event-dot{
+    position:absolute;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid white;
+    z-index:2;
+  }
+
+  .dot-own{ background:#22c55e; }
+  .dot-rival{ background:#ef4444; }
+
+  .side-panel{
+    background:#111827;
+    border-radius:18px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .panel-section{
+    background:#1f2937;
+    border-radius:14px;
+    padding:12px;
+  }
+
+  .big-time{
+    font-size:38px;
+    font-weight:bold;
+    text-align:center;
+    margin:8px 0 12px;
+  }
+
+  .period-label{
+    text-align:center;
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:8px;
+  }
+
+  .mini-title{
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+
+  .player-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .player-chip{
+    padding:10px;
+    border-radius:10px;
+    background:#334155;
+    cursor:pointer;
+  }
+
+  .player-chip.selected{
+    background:#22c55e;
+    color:white;
+  }
+
+  .player-chip.bench{
+    background:#475569;
+  }
+
+  .player-chip.out{
+    background:#3b82f6;
+  }
+
+  .modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:20;
+    padding:20px;
+  }
+
+  .modal.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#0f172a;
+    color:white;
+    width:min(920px, 95vw);
+    max-height:90vh;
+    overflow:auto;
+    border-radius:18px;
+    padding:18px;
+  }
+
+  .two-col{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .event-team-box{
+    border-radius:14px;
+    padding:14px;
+  }
+
+  .own-box{ background:#14532d; }
+  .rival-box{ background:#7f1d1d; }
+
+  .event-btn{
+    display:block;
+    width:100%;
+    margin:8px 0;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+  }
+
+  .subtle{
+    opacity:.8;
+  }
+
+  .section-space{
+    margin-top:18px;
+  }
+
+  .check-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    text-align:left;
+  }
+
+  .check-item{
+    background:#1e293b;
+    padding:10px;
+    border-radius:10px;
+  }
+
+  .hidden{
+    display:none !important;
+  }
+
+  @media (max-width: 980px){
+    .match-layout{
+      grid-template-columns:1fr;
+    }
+  }
 </style>
-
 </head>
-
-
 <body>
 
-<div id="menu" class="screen">
-
-<h1>Futsal Lab</h1>
-
-<button onclick="abrirEquipos()">Equipos</button>
-<button onclick="alert('Nuevo partido luego')">Nuevo partido</button>
-<button onclick="alert('Estadísticas luego')">Estadísticas</button>
-
+<div id="menuScreen" class="screen centered" style="display:flex;">
+  <h1>Futsal Lab</h1>
+  <div class="menu-buttons">
+    <button class="secondary" onclick="openNewMatchSetup()">Nuevo partido</button>
+    <button class="secondary" onclick="openTeamsScreen()">Equipos</button>
+    <button class="secondary" onclick="openStatsScreen()">Estadísticas</button>
+    <button class="secondary" onclick="alert('Entrenamientos: próximo módulo')">Entrenamientos</button>
+  </div>
 </div>
 
-
-
-<div id="equiposScreen" class="screen">
-
-<h2>Equipos</h2>
-
-<button onclick="crearEquipo()">Crear equipo</button>
-
-<div id="listaEquipos"></div>
-
-<br>
-
-<button onclick="volverMenu()">Volver</button>
-
+<div id="teamsScreen" class="screen">
+  <div class="topbar">
+    <h2>Equipos</h2>
+    <div>
+      <button class="primary" onclick="createTeam()">Crear equipo</button>
+      <button class="secondary" onclick="goMenu()">Volver</button>
+    </div>
+  </div>
+  <div id="teamsList"></div>
 </div>
 
-
-
-<div id="equipoDetalle" class="screen">
-
-<h2 id="nombreEquipo"></h2>
-
-<button onclick="agregarJugador()">Agregar jugador</button>
-
-<div id="listaJugadores"></div>
-
-<br>
-
-<button onclick="volverEquipos()">Volver</button>
-
+<div id="teamDetailScreen" class="screen">
+  <div class="topbar">
+    <h2 id="teamDetailTitle">Equipo</h2>
+    <div>
+      <button class="primary" onclick="addPlayerToCurrentTeam()">Agregar jugador</button>
+      <button class="secondary" onclick="openTeamsScreen()">Volver</button>
+    </div>
+  </div>
+  <div id="teamPlayersList"></div>
 </div>
 
+<div id="newMatchSetupScreen" class="screen">
+  <div class="topbar">
+    <h2>Nuevo partido</h2>
+    <button class="secondary" onclick="goMenu()">Volver</button>
+  </div>
 
+  <div class="card">
+    <div class="row">
+      <select id="matchTeamSelect"></select>
+      <input id="matchRivalInput" placeholder="Rival">
+      <input id="matchDateInput" type="date">
+      <input id="matchCompetitionInput" placeholder="Competencia">
+    </div>
+
+    <div class="section-space">
+      <div class="mini-title">Jugadores citados</div>
+      <div id="calledPlayersList" class="check-list"></div>
+    </div>
+
+    <div class="section-space">
+      <button class="primary" onclick="startMatch()">Iniciar partido</button>
+    </div>
+  </div>
+</div>
+
+<div id="matchScreen" class="screen">
+  <div class="match-layout">
+    <div class="court-wrapper">
+      <div class="match-header">
+        <div><strong>Equipo:</strong> <span id="headerTeam"></span></div>
+        <div><strong>Rival:</strong> <span id="headerRival"></span></div>
+        <div><strong>Fecha:</strong> <span id="headerDate"></span></div>
+        <div><strong>Competencia:</strong> <span id="headerCompetition"></span></div>
+      </div>
+
+      <div id="court" class="court" onclick="handleCourtClick(event)">
+        <div class="midline"></div>
+        <div class="center-circle"></div>
+        <div class="penalty-left"></div>
+        <div class="penalty-right"></div>
+
+        <div class="goal-label goal-own">ARCO PROPIO</div>
+        <div class="goal-label goal-rival">ARCO RIVAL</div>
+
+        <div id="overlayButtons" class="hidden" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; z-index:5;">
+          <button id="overlayStatsBtn" class="secondary"></button>
+          <button id="overlayNextBtn" class="primary"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-panel">
+      <div class="panel-section">
+        <div class="mini-title">Sector reloj</div>
+        <div id="periodLabel" class="period-label">PRIMER TIEMPO</div>
+        <div id="timeDisplay" class="big-time">00:00</div>
+        <div class="row" style="justify-content:center;">
+          <button class="primary" onclick="playClock()">Play</button>
+          <button class="secondary" onclick="pauseClock()">Pausa</button>
+          <button class="danger" onclick="stopClock()">Stop</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="mini-title">Minutos</div>
+        <button class="secondary" onclick="openMinutesModal()">MINUTOS</button>
+        <div class="small subtle">Jugadores en cancha:</div>
+        <div id="onCourtSummary" class="small"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="mini-title">Resumen rápido</div>
+        <div class="small">Eventos registrados: <span id="eventCountLabel">0</span></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="mini-title">Acciones</div>
+        <button class="secondary" onclick="goMenu()">Volver al menú</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="statsScreen" class="screen">
+  <div class="topbar">
+    <h2>Estadísticas</h2>
+    <button class="secondary" onclick="goMenu()">Volver</button>
+  </div>
+  <div id="statsTeamsList"></div>
+</div>
+
+<div id="eventModal" class="modal">
+  <div class="modal-box">
+    <div class="topbar">
+      <h3>Cargar dato</h3>
+      <button class="secondary" onclick="closeEventModal()">Cerrar</button>
+    </div>
+
+    <div class="two-col">
+      <div class="event-team-box own-box">
+        <h3 id="ownTeamLabel">Mi equipo</h3>
+        <button class="event-btn" onclick="chooseBaseEvent('propio','remate')">REMATE</button>
+        <button class="event-btn" onclick="chooseBaseEvent('propio','falta_recibida')">FALTA RECIBIDA</button>
+        <button class="event-btn" onclick="chooseBaseEvent('propio','perdida')">PÉRDIDA</button>
+        <button class="event-btn" onclick="chooseBaseEvent('propio','recuperacion')">RECUPERACIÓN</button>
+        <button class="event-btn" onclick="chooseBaseEvent('propio','tarjeta')">TARJETA</button>
+      </div>
+
+      <div class="event-team-box rival-box">
+        <h3 id="rivalTeamLabel">Rival</h3>
+        <button class="event-btn" onclick="chooseBaseEvent('rival','remate')">REMATE</button>
+        <button class="event-btn" onclick="chooseBaseEvent('rival','falta_recibida')">FALTA RECIBIDA</button>
+        <button class="event-btn" onclick="chooseBaseEvent('rival','perdida')">PÉRDIDA</button>
+        <button class="event-btn" onclick="chooseBaseEvent('rival','recuperacion')">RECUPERACIÓN</button>
+        <button class="event-btn" onclick="chooseBaseEvent('rival','tarjeta')">TARJETA</button>
+      </div>
+    </div>
+
+    <div id="subEventArea" class="section-space"></div>
+    <div id="playerSelectionArea" class="section-space"></div>
+  </div>
+</div>
+
+<div id="minutesModal" class="modal">
+  <div class="modal-box">
+    <div class="topbar">
+      <h3>MINUTOS</h3>
+      <button class="secondary" onclick="closeMinutesModal()">Cerrar</button>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h4>En cancha</h4>
+        <div id="onCourtListModal"></div>
+      </div>
+      <div>
+        <h4>Citados fuera</h4>
+        <div id="benchListModal"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="database.js"></script>
 
 <script>
-
-let db = JSON.parse(localStorage.getItem("futsalDB")) || {equipos:[]};
-
-function guardarDB(){
-localStorage.setItem("futsalDB",JSON.stringify(db));
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
 }
 
+/* =========================
+   BASE LOCAL
+========================= */
 
-function mostrarPantalla(id){
-
-document.querySelectorAll(".screen").forEach(s=>{
-s.style.display="none";
-});
-
-document.getElementById(id).style.display="block";
-
-}
-
-
-
-function volverMenu(){
-mostrarPantalla("menu");
-}
-
-
-
-function abrirEquipos(){
-
-mostrarPantalla("equiposScreen");
-
-renderEquipos();
-
-}
-
-
-
-function crearEquipo(){
-
-let nombre = prompt("Nombre del equipo");
-
-if(!nombre) return;
-
-let equipo={
-id:Date.now(),
-nombre:nombre,
-jugadores:[]
+let db = JSON.parse(localStorage.getItem("futsalLabFullDB")) || {
+  equipos: [],
+  partidos: []
 };
 
-db.equipos.push(equipo);
-
-guardarDB();
-
-renderEquipos();
-
+function saveDB(){
+  localStorage.setItem("futsalLabFullDB", JSON.stringify(db));
 }
 
+/* =========================
+   NAVEGACION
+========================= */
 
-
-function renderEquipos(){
-
-let cont=document.getElementById("listaEquipos");
-
-cont.innerHTML="";
-
-db.equipos.forEach(e=>{
-
-let div=document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=`
-<h3>${e.nombre}</h3>
-<button onclick="abrirEquipo(${e.id})">Abrir</button>
-`;
-
-cont.appendChild(div);
-
-});
-
+function hideAllScreens(){
+  document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
 }
 
-
-
-let equipoActual=null;
-
-
-
-function abrirEquipo(id){
-
-equipoActual=db.equipos.find(e=>e.id===id);
-
-document.getElementById("nombreEquipo").innerText=equipoActual.nombre;
-
-mostrarPantalla("equipoDetalle");
-
-renderJugadores();
-
+function goMenu(){
+  hideAllScreens();
+  document.getElementById("menuScreen").style.display = "flex";
 }
 
-
-
-function volverEquipos(){
-
-mostrarPantalla("equiposScreen");
-
+function openTeamsScreen(){
+  hideAllScreens();
+  document.getElementById("teamsScreen").style.display = "block";
+  renderTeams();
 }
 
-
-
-function agregarJugador(){
-
-let nombre=prompt("Nombre jugador");
-
-if(!nombre) return;
-
-let jugador={
-id:Date.now(),
-nombre:nombre
-};
-
-equipoActual.jugadores.push(jugador);
-
-guardarDB();
-
-renderJugadores();
-
+function openStatsScreen(){
+  hideAllScreens();
+  document.getElementById("statsScreen").style.display = "block";
+  renderStatsTeams();
 }
 
+/* =========================
+   EQUIPOS
+========================= */
 
+let currentTeamId = null;
 
-function eliminarJugador(id){
+function createTeam(){
+  const nombre = prompt("Nombre del equipo");
+  if(!nombre) return;
 
-equipoActual.jugadores=equipoActual.jugadores.filter(j=>j.id!==id);
+  const equipo = {
+    id: Date.now(),
+    nombre,
+    escudo: "",
+    jugadores: []
+  };
 
-guardarDB();
-
-renderJugadores();
-
+  db.equipos.push(equipo);
+  saveDB();
+  renderTeams();
 }
 
+function renderTeams(){
+  const container = document.getElementById("teamsList");
+  container.innerHTML = "";
 
+  if(db.equipos.length === 0){
+    container.innerHTML = `<div class="card">No hay equipos creados.</div>`;
+    return;
+  }
 
-function renderJugadores(){
-
-let cont=document.getElementById("listaJugadores");
-
-cont.innerHTML="";
-
-equipoActual.jugadores.forEach(j=>{
-
-let div=document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=`
-${j.nombre}
-<br>
-<button onclick="eliminarJugador(${j.id})">Eliminar</button>
-`;
-
-cont.appendChild(div);
-
-});
-
+  db.equipos.forEach(eq => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${eq.nombre}</h3>
+      <div class="small">${eq.jugadores.length} jugadores</div>
+      <button class="secondary" onclick="openTeamDetail(${eq.id})">Abrir</button>
+    `;
+    container.appendChild(div);
+  });
 }
 
+function openTeamDetail(id){
+  currentTeamId = id;
+  const equipo = db.equipos.find(e => e.id === id);
+  hideAllScreens();
+  document.getElementById("teamDetailScreen").style.display = "block";
+  document.getElementById("teamDetailTitle").innerText = equipo.nombre;
+  renderTeamPlayers();
+}
+
+function renderTeamPlayers(){
+  const equipo = db.equipos.find(e => e.id === currentTeamId);
+  const container = document.getElementById("teamPlayersList");
+  container.innerHTML = "";
+
+  if(equipo.jugadores.length === 0){
+    container.innerHTML = `<div class="card">Todavía no hay jugadores.</div>`;
+    return;
+  }
+
+  equipo.jugadores.forEach(j => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${j.nombre}</h3>
+      <div class="small">N° ${j.numero || "-"} | Posición: ${j.posicion || "-"}</div>
+      <div class="small">Pierna: ${j.pierna || "-"} | Peso: ${j.peso || "-"} | Altura: ${j.altura || "-"}</div>
+      <button class="danger" onclick="deletePlayer(${j.id})">Eliminar jugador</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addPlayerToCurrentTeam(){
+  const equipo = db.equipos.find(e => e.id === currentTeamId);
+  if(!equipo) return;
+
+  const nombre = prompt("Nombre del jugador");
+  if(!nombre) return;
+
+  const numero = prompt("Número");
+  const posicion = prompt("Posición");
+  const pierna = prompt("Pierna hábil");
+  const peso = prompt("Peso");
+  const altura = prompt("Altura");
+
+  equipo.jugadores.push({
+    id: Date.now(),
+    nombre,
+    numero: numero || "",
+    posicion: posicion || "",
+    pierna: pierna || "",
+    peso: peso || "",
+    altura: altura || "",
+    foto: ""
+  });
+
+  saveDB();
+  renderTeamPlayers();
+}
+
+function deletePlayer(playerId){
+  const equipo = db.equipos.find(e => e.id === currentTeamId);
+  if(!equipo) return;
+
+  equipo.jugadores = equipo.jugadores.filter(j => j.id !== playerId);
+  saveDB();
+  renderTeamPlayers();
+}
+
+/* =========================
+   NUEVO PARTIDO
+========================= */
+
+let currentMatch = null;
+let clockInterval = null;
+let selectedCourtPoint = null;
+let pendingEvent = null;
+let selectedOutPlayerId = null;
+
+function openNewMatchSetup(){
+  hideAllScreens();
+  document.getElementById("newMatchSetupScreen").style.display = "block";
+
+  const teamSelect = document.getElementById("matchTeamSelect");
+  teamSelect.innerHTML = `<option value="">Seleccionar equipo</option>`;
+
+  db.equipos.forEach(eq => {
+    const option = document.createElement("option");
+    option.value = eq.id;
+    option.textContent = eq.nombre;
+    teamSelect.appendChild(option);
+  });
+
+  document.getElementById("calledPlayersList").innerHTML = "";
+  teamSelect.onchange = renderCalledPlayersForSelectedTeam;
+}
+
+function renderCalledPlayersForSelectedTeam(){
+  const teamId = Number(document.getElementById("matchTeamSelect").value);
+  const container = document.getElementById("calledPlayersList");
+  container.innerHTML = "";
+
+  if(!teamId) return;
+
+  const team = db.equipos.find(e => e.id === teamId);
+  if(!team) return;
+
+  team.jugadores.forEach(j => {
+    const div = document.createElement("label");
+    div.className = "check-item";
+    div.innerHTML = `
+      <input type="checkbox" value="${j.id}" class="calledPlayerCheckbox">
+      ${j.nombre} ${j.numero ? `(N° ${j.numero})` : ""}
+    `;
+    container.appendChild(div);
+  });
+}
+
+function startMatch(){
+  const teamId = Number(document.getElementById("matchTeamSelect").value);
+  const rival = document.getElementById("matchRivalInput").value.trim();
+  const fecha = document.getElementById("matchDateInput").value;
+  const competencia = document.getElementById("matchCompetitionInput").value.trim();
+
+  if(!teamId){
+    alert("Seleccioná tu equipo.");
+    return;
+  }
+
+  if(!rival){
+    alert("Ingresá rival.");
+    return;
+  }
+
+  const team = db.equipos.find(e => e.id === teamId);
+  const checked = Array.from(document.querySelectorAll(".calledPlayerCheckbox:checked")).map(c => Number(c.value));
+
+  if(checked.length === 0){
+    alert("Seleccioná al menos un jugador citado.");
+    return;
+  }
+
+  currentMatch = {
+    id: Date.now(),
+    teamId,
+    teamName: team.nombre,
+    rival,
+    fecha,
+    competencia,
+    periodo: 1,
+    tiempo: 0,
+    running: false,
+    finalized: false,
+    calledPlayers: team.jugadores.filter(j => checked.includes(j.id)),
+    onCourtPlayerIds: team.jugadores.filter(j => checked.includes(j.id)).slice(0,5).map(j => j.id),
+    events: [],
+    minuteLog: [],
+    sharedMinutes: {},
+    phase: "playing"
+  };
+
+  hideAllScreens();
+  document.getElementById("matchScreen").style.display = "block";
+
+  document.getElementById("headerTeam").innerText = currentMatch.teamName;
+  document.getElementById("headerRival").innerText = currentMatch.rival;
+  document.getElementById("headerDate").innerText = currentMatch.fecha || "-";
+  document.getElementById("headerCompetition").innerText = currentMatch.competencia || "-";
+  document.getElementById("ownTeamLabel").innerText = currentMatch.teamName;
+  document.getElementById("rivalTeamLabel").innerText = currentMatch.rival;
+
+  updateClockUI();
+  updateOnCourtSummary();
+  renderCourtEvents();
+  updateOverlayButtons();
+}
+
+function updateClockUI(){
+  document.getElementById("timeDisplay").innerText = formatTime(currentMatch ? currentMatch.tiempo : 0);
+  document.getElementById("periodLabel").innerText = currentMatch && currentMatch.periodo === 1 ? "PRIMER TIEMPO" : "SEGUNDO TIEMPO";
+  document.getElementById("eventCountLabel").innerText = currentMatch ? currentMatch.events.length : 0;
+}
+
+function formatTime(seconds){
+  const mm = String(Math.floor(seconds / 60)).padStart(2,"0");
+  const ss = String(seconds % 60).padStart(2,"0");
+  return `${mm}:${ss}`;
+}
+
+function playClock(){
+  if(!currentMatch || currentMatch.finalized) return;
+  if(currentMatch.running) return;
+
+  currentMatch.running = true;
+
+  clockInterval = setInterval(() => {
+    currentMatch.tiempo += 1;
+    registerSharedMinuteTick();
+    updateClockUI();
+  }, 1000);
+}
+
+function pauseClock(){
+  if(!currentMatch) return;
+  currentMatch.running = false;
+  clearInterval(clockInterval);
+}
+
+function stopClock(){
+  if(!currentMatch) return;
+
+  pauseClock();
+
+  if(currentMatch.periodo === 1 && currentMatch.phase === "playing"){
+    const ok = confirm("¿Confirma que terminó el PRIMER TIEMPO?");
+    if(!ok){
+      playClock();
+      return;
+    }
+
+    currentMatch.phase = "halftime";
+    currentMatch.tiempo = 0;
+    updateClockUI();
+    updateOverlayButtons();
+    return;
+  }
+
+  if(currentMatch.periodo === 2 && currentMatch.phase === "playing"){
+    const ok = confirm("¿Confirma que terminó el PARTIDO?");
+    if(!ok){
+      playClock();
+      return;
+    }
+
+    currentMatch.phase = "finished";
+    currentMatch.finalized = true;
+    updateOverlayButtons();
+    saveFinishedMatch();
+  }
+}
+
+function updateOverlayButtons(){
+  const overlay = document.getElementById("overlayButtons");
+  const statsBtn = document.getElementById("overlayStatsBtn");
+  const nextBtn = document.getElementById("overlayNextBtn");
+
+  overlay.classList.add("hidden");
+
+  if(!currentMatch) return;
+
+  if(currentMatch.phase === "halftime"){
+    overlay.classList.remove("hidden");
+    statsBtn.innerText = "ESTADÍSTICAS PRIMER TIEMPO";
+    nextBtn.innerText = "PASAR A SEGUNDO TIEMPO";
+
+    statsBtn.onclick = () => {
+      alert(buildSimpleStatsText("primer_tiempo"));
+    };
+
+    nextBtn.onclick = () => {
+      currentMatch.periodo = 2;
+      currentMatch.phase = "playing";
+      currentMatch.tiempo = 0;
+      overlay.classList.add("hidden");
+      updateClockUI();
+    };
+  }
+
+  if(currentMatch.phase === "finished"){
+    overlay.classList.remove("hidden");
+    statsBtn.innerText = "ESTADÍSTICAS PARTIDO";
+    nextBtn.innerText = "VOLVER AL MENU INICIAL";
+
+    statsBtn.onclick = () => {
+      alert(buildSimpleStatsText("partido"));
+    };
+
+    nextBtn.onclick = () => {
+      goMenu();
+    };
+  }
+}
+
+function buildSimpleStatsText(mode){
+  if(!currentMatch) return "Sin datos";
+
+  const own = currentMatch.events.filter(e => e.team === "propio");
+  const rival = currentMatch.events.filter(e => e.team === "rival");
+
+  const ownShots = own.filter(e => e.type === "remate");
+  const rivalShots = rival.filter(e => e.type === "remate");
+
+  const ownGoals = ownShots.filter(e => e.subtype === "gol").length;
+  const rivalGoals = rivalShots.filter(e => e.subtype === "gol").length;
+
+  return `Estadísticas ${mode === "primer_tiempo" ? "primer tiempo" : "partido"}:
+  
+${currentMatch.teamName}
+Remates: ${ownShots.length}
+Goles: ${ownGoals}
+Pérdidas: ${own.filter(e => e.type === "perdida").length}
+Recuperaciones: ${own.filter(e => e.type === "recuperacion").length}
+Faltas recibidas: ${own.filter(e => e.type === "falta_recibida").length}
+Tarjetas: ${own.filter(e => e.type === "tarjeta").length}
+
+${currentMatch.rival}
+Remates: ${rivalShots.length}
+Goles: ${rivalGoals}
+Pérdidas: ${rival.filter(e => e.type === "perdida").length}
+Recuperaciones: ${rival.filter(e => e.type === "recuperacion").length}
+Faltas recibidas: ${rival.filter(e => e.type === "falta_recibida").length}
+Tarjetas: ${rival.filter(e => e.type === "tarjeta").length}`;
+}
+
+function saveFinishedMatch(){
+  if(!currentMatch) return;
+  db.partidos.push(JSON.parse(JSON.stringify(currentMatch)));
+  saveDB();
+}
+
+/* =========================
+   MINUTOS
+========================= */
+
+function openMinutesModal(){
+  if(!currentMatch) return;
+
+  document.getElementById("minutesModal").classList.add("show");
+  renderMinutesModal();
+}
+
+function closeMinutesModal(){
+  document.getElementById("minutesModal").classList.remove("show");
+  selectedOutPlayerId = null;
+}
+
+function renderMinutesModal(){
+  const onCourtBox = document.getElementById("onCourtListModal");
+  const benchBox = document.getElementById("benchListModal");
+
+  onCourtBox.innerHTML = "";
+  benchBox.innerHTML = "";
+
+  const onCourtPlayers = currentMatch.calledPlayers.filter(p => currentMatch.onCourtPlayerIds.includes(p.id));
+  const benchPlayers = currentMatch.calledPlayers.filter(p => !currentMatch.onCourtPlayerIds.includes(p.id));
+
+  onCourtPlayers.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "player-chip" + (selectedOutPlayerId === p.id ? " selected" : "");
+    div.innerText = p.nombre;
+    div.onclick = () => {
+      if(selectedOutPlayerId === p.id){
+        selectedOutPlayerId = null;
+      }else{
+        selectedOutPlayerId = p.id;
+      }
+      renderMinutesModal();
+    };
+    onCourtBox.appendChild(div);
+  });
+
+  benchPlayers.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "player-chip bench";
+    div.innerText = p.nombre;
+    div.onclick = () => {
+      if(!selectedOutPlayerId){
+        alert("Primero seleccioná el jugador que sale.");
+        return;
+      }
+      makeSubstitution(selectedOutPlayerId, p.id);
+    };
+    benchBox.appendChild(div);
+  });
+}
+
+function makeSubstitution(outId, inId){
+  const idx = currentMatch.onCourtPlayerIds.indexOf(outId);
+  if(idx === -1) return;
+  if(currentMatch.onCourtPlayerIds.includes(inId)) return;
+
+  currentMatch.onCourtPlayerIds[idx] = inId;
+  currentMatch.minuteLog.push({
+    type:"cambio",
+    tiempo: currentMatch.tiempo,
+    periodo: currentMatch.periodo,
+    sale: outId,
+    entra: inId
+  });
+
+  selectedOutPlayerId = null;
+  renderMinutesModal();
+  updateOnCourtSummary();
+}
+
+function updateOnCourtSummary(){
+  if(!currentMatch) return;
+  const players = currentMatch.calledPlayers.filter(p => currentMatch.onCourtPlayerIds.includes(p.id));
+  document.getElementById("onCourtSummary").innerText = players.map(p => p.nombre).join(", ");
+}
+
+function registerSharedMinuteTick(){
+  if(!currentMatch || currentMatch.onCourtPlayerIds.length === 0) return;
+
+  currentMatch.onCourtPlayerIds.forEach(pid => {
+    let log = currentMatch.minuteLog.find(x => x.type === "jugador_minutos" && x.playerId === pid);
+    if(!log){
+      log = { type:"jugador_minutos", playerId: pid, seconds: 0 };
+      currentMatch.minuteLog.push(log);
+    }
+    log.seconds += 1;
+  });
+
+  const ids = [...currentMatch.onCourtPlayerIds];
+  for(let i=0;i<ids.length;i++){
+    for(let j=i+1;j<ids.length;j++){
+      const key = [ids[i], ids[j]].sort((a,b)=>a-b).join("_");
+      if(!currentMatch.sharedMinutes[key]) currentMatch.sharedMinutes[key] = 0;
+      currentMatch.sharedMinutes[key] += 1;
+    }
+  }
+}
+
+/* =========================
+   EVENTOS EN CANCHA
+========================= */
+
+function handleCourtClick(e){
+  if(!currentMatch || !currentMatch.running || currentMatch.phase !== "playing") return;
+
+  const court = document.getElementById("court");
+  const rect = court.getBoundingClientRect();
+
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+  selectedCourtPoint = { x, y };
+  pendingEvent = null;
+
+  document.getElementById("subEventArea").innerHTML = "";
+  document.getElementById("playerSelectionArea").innerHTML = "";
+  document.getElementById("eventModal").classList.add("show");
+}
+
+function closeEventModal(){
+  document.getElementById("eventModal").classList.remove("show");
+  pendingEvent = null;
+}
+
+function chooseBaseEvent(team, type){
+  pendingEvent = {
+    team,
+    type,
+    subtype: null
+  };
+
+  const subArea = document.getElementById("subEventArea");
+  const playerArea = document.getElementById("playerSelectionArea");
+  subArea.innerHTML = "";
+  playerArea.innerHTML = "";
+
+  if(type === "remate"){
+    subArea.innerHTML = `
+      <h4>Seleccionar tipo de remate</h4>
+      <button class="secondary" onclick="setSubtypeAndSelectPlayer('desviado')">Remate desviado</button>
+      <button class="secondary" onclick="setSubtypeAndSelectPlayer('al_arco')">Remate al arco</button>
+      <button class="secondary" onclick="setSubtypeAndSelectPlayer('gol')">Gol</button>
+    `;
+    return;
+  }
+
+  if(type === "tarjeta"){
+    subArea.innerHTML = `
+      <h4>Seleccionar tarjeta</h4>
+      <button class="secondary" onclick="setSubtypeAndSelectPlayer('amarilla')">Amarilla</button>
+      <button class="secondary" onclick="setSubtypeAndSelectPlayer('roja')">Roja</button>
+    `;
+    return;
+  }
+
+  setSubtypeAndSelectPlayer(null);
+}
+
+function setSubtypeAndSelectPlayer(subtype){
+  pendingEvent.subtype = subtype || "";
+  const playerArea = document.getElementById("playerSelectionArea");
+
+  let players = [];
+  if(pendingEvent.team === "propio"){
+    players = currentMatch.calledPlayers.filter(p => currentMatch.onCourtPlayerIds.includes(p.id));
+  }else{
+    players = currentMatch.calledPlayers.filter(p => currentMatch.onCourtPlayerIds.includes(p.id));
+  }
+
+  playerArea.innerHTML = `<h4>Seleccionar protagonista</h4>`;
+
+  players.forEach(p => {
+    const btn = document.createElement("button");
+    btn.className = "secondary";
+    btn.innerText = p.nombre;
+    btn.onclick = () => saveEventWithPlayer(p.id, p.nombre);
+    playerArea.appendChild(btn);
+  });
+}
+
+function saveEventWithPlayer(playerId, playerName){
+  if(!pendingEvent || !selectedCourtPoint) return;
+
+  currentMatch.events.push({
+    id: Date.now(),
+    periodo: currentMatch.periodo,
+    tiempo: currentMatch.tiempo,
+    team: pendingEvent.team,
+    type: pendingEvent.type,
+    subtype: pendingEvent.subtype || "",
+    playerId,
+    playerName,
+    x: selectedCourtPoint.x,
+    y: selectedCourtPoint.y
+  });
+
+  updateClockUI();
+  renderCourtEvents();
+  closeEventModal();
+}
+
+function renderCourtEvents(){
+  const court = document.getElementById("court");
+  court.querySelectorAll(".event-dot").forEach(x => x.remove());
+
+  if(!currentMatch) return;
+
+  currentMatch.events.forEach(ev => {
+    const dot = document.createElement("div");
+    dot.className = `event-dot ${ev.team === "propio" ? "dot-own" : "dot-rival"}`;
+    dot.style.left = ev.x + "%";
+    dot.style.top = ev.y + "%";
+    dot.title = `${ev.playerName} - ${ev.type} ${ev.subtype ? "(" + ev.subtype + ")" : ""}`;
+    court.appendChild(dot);
+  });
+}
+
+/* =========================
+   ESTADISTICAS
+========================= */
+
+function renderStatsTeams(){
+  const container = document.getElementById("statsTeamsList");
+  container.innerHTML = "";
+
+  if(db.equipos.length === 0){
+    container.innerHTML = `<div class="card">No hay equipos guardados.</div>`;
+    return;
+  }
+
+  db.equipos.forEach(eq => {
+    const teamMatches = db.partidos.filter(p => p.teamId === eq.id);
+    const allEvents = teamMatches.flatMap(p => p.events);
+
+    const ownEvents = allEvents.filter(e => e.team === "propio");
+    const remates = ownEvents.filter(e => e.type === "remate");
+    const alArco = remates.filter(e => e.subtype === "al_arco" || e.subtype === "gol");
+    const goles = remates.filter(e => e.subtype === "gol");
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${eq.nombre}</h3>
+      <div>Partidos: ${teamMatches.length}</div>
+      <div>Remates: ${remates.length}</div>
+      <div>Al arco: ${alArco.length}</div>
+      <div>Goles: ${goles.length}</div>
+      <div>Faltas recibidas: ${ownEvents.filter(e => e.type === "falta_recibida").length}</div>
+      <div>Pérdidas: ${ownEvents.filter(e => e.type === "perdida").length}</div>
+      <div>Recuperaciones: ${ownEvents.filter(e => e.type === "recuperacion").length}</div>
+      <div>Tarjetas: ${ownEvents.filter(e => e.type === "tarjeta").length}</div>
+    `;
+    container.appendChild(div);
+  });
+}
 </script>
-
 </body>
-
 </html>
