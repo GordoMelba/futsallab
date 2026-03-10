@@ -133,7 +133,13 @@ text-align:center;
 
 <select id="equipoSelect"></select>
 
-<h3>Jugadores que empiezan en cancha</h3>
+<input id="rivalInput" placeholder="Rival">
+
+<input type="date" id="fechaInput">
+
+<input id="torneoInput" placeholder="Competencia / Torneo">
+
+<h3>Jugadores que empiezan en cancha</h3></h3>
 
 <div id="jugadoresTitulares"></div>
 
@@ -150,7 +156,13 @@ text-align:center;
 
 <div>
 
+<div>
+
+<div id="datosPartido"></div>
+
 <div class="court" id="cancha"></div>
+
+</div>
 
 </div>
 
@@ -333,14 +345,67 @@ this.checked=false
 let jugadoresEnCancha=[]
 
 let eventos=[]
+  let partidoActual={}
 
 function iniciarPartido(){
 
 if(titulares.length!==5){
-
 alert("Seleccionar 5 jugadores")
-
 return
+}
+
+let equipo=db.equipos.find(e=>e.id==equipoSelect.value)
+
+let rival=rivalInput.value
+let fecha=fechaInput.value
+let torneo=torneoInput.value
+
+jugadoresEnCancha=equipo.jugadores.filter(j=>titulares.includes(j.id))
+
+partidoActual={
+equipo:equipo.nombre,
+rival:rival,
+fecha:fecha,
+torneo:torneo
+}
+
+hideScreens()
+
+partidoScreen.style.display="block"
+
+datosPartido.innerHTML = `
+<b>${partidoActual.equipo}</b> vs <b>${partidoActual.rival}</b><br>
+${partidoActual.fecha} - ${partidoActual.torneo}
+`
+
+actualizarPanel()
+
+cancha.onclick=registrarEvento
+
+}
+
+let equipo=db.equipos.find(e=>e.id==equipoSelect.value)
+
+let rival=rivalInput.value
+let fecha=fechaInput.value
+let torneo=torneoInput.value
+
+jugadoresEnCancha=equipo.jugadores.filter(j=>titulares.includes(j.id))
+
+partidoActual={
+equipo:equipo.nombre,
+rival:rival,
+fecha:fecha,
+torneo:torneo
+}
+
+hideScreens()
+
+partidoScreen.style.display="block"
+
+actualizarPanel()
+
+cancha.onclick=registrarEvento
 
 }
 
